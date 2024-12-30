@@ -1,4 +1,4 @@
-mod connectors;
+pub mod connectors;
 
 #[derive(Debug)]
 pub struct Configuration {
