@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod bodies {
     use steamgriddb_dl::connectors::http::*;
 
     #[test]
@@ -147,5 +147,26 @@ mod tests {
             request.is_err(),
             "Request was formed, while it shouldn't have been."
         );
+    }
+}
+
+#[cfg(test)]
+mod connections {
+    use steamgriddb_dl::connectors::http::*;
+    #[test]
+    fn get_request_without_headers() {
+        let expected_body = "{
+  \"userId\": 1,
+  \"id\": 1,
+  \"title\": \"sunt aut facere repellat provident occaecati excepturi optio reprehenderit\",
+  \"body\": \"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto\"
+}";
+        let request: HttpRequest = HttpRequest {
+            method: HttpRequestMethod::GET,
+            url: "https://jsonplaceholder.typicode.com/posts/1".to_owned(),
+            headers: vec![],
+        };
+        let result_body = handle_get_request(request);
+        assert_eq!(result_body, expected_body);
     }
 }

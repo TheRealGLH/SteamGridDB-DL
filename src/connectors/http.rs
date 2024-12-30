@@ -1,7 +1,7 @@
 pub struct HttpRequest {
     pub method: HttpRequestMethod,
     pub url: String,
-    pub headers: Vec<HttpRequestMethod>,
+    pub headers: Vec<HttpHeader>,
 }
 
 impl HttpRequest {
@@ -36,6 +36,10 @@ impl HttpRequest {
     pub fn game_info_request(id: &str) -> Result<Self, &'static str> {
         todo!();
     }
+}
+
+pub fn handle_get_request(request: HttpRequest) -> String {
+    todo!();
 }
 
 pub struct HttpHeader {
