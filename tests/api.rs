@@ -170,7 +170,7 @@ mod bodies {
                 assert_eq!(expected_acc_key, acc_header.key);
                 assert_eq!(expected_acc_val, acc_header.value);
                 assert_eq!(
-                    "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
+                    "https://www.steamgriddb.com/api/public/game/".to_string() + id,
                     request.url
                 );
             }
@@ -231,5 +231,63 @@ mod connections {
         };
         let result = handle_get_request(request);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn game_info_request_ok() {
+        let request = HttpRequest::game_info_request("123");
+
+        match request {
+            Ok(r) => {
+                match handle_get_request(r) {
+                    Ok(response) => {
+                        assert_eq!(response.status(), 200);
+                        let response_body = response.into_string();
+                        assert!(response_body.is_ok());
+                        response_body.unwrap();
+                    }
+                    Err(e) => panic!("Http error: {e}"),
+                };
+            }
+            Err(e) => panic!("Failed to create request object {e}"),
+        };
+    }
+    #[test]
+    fn hero_info_request_ok() {
+        let request = HttpRequest::hero_info_request("123");
+
+        match request {
+            Ok(r) => {
+                match handle_get_request(r) {
+                    Ok(response) => {
+                        assert_eq!(response.status(), 200);
+                        let response_body = response.into_string();
+                        assert!(response_body.is_ok());
+                        response_body.unwrap();
+                    }
+                    Err(e) => panic!("Http error: {e}"),
+                };
+            }
+            Err(e) => panic!("Failed to create request object {e}"),
+        };
+    }
+    #[test]
+    fn logo_info_request_ok() {
+        let request = HttpRequest::logo_info_request("123");
+
+        match request {
+            Ok(r) => {
+                match handle_get_request(r) {
+                    Ok(response) => {
+                        assert_eq!(response.status(), 200);
+                        let response_body = response.into_string();
+                        assert!(response_body.is_ok());
+                        response_body.unwrap();
+                    }
+                    Err(e) => panic!("Http error: {e}"),
+                };
+            }
+            Err(e) => panic!("Failed to create request object {e}"),
+        };
     }
 }
