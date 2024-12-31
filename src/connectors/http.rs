@@ -73,10 +73,16 @@ impl HttpRequest {
         } else {
             Ok(HttpRequest {
                 method: HttpRequestMethod::GET,
-                url: "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
+                url: "https://www.steamgriddb.com/api/public/game/".to_string() + id,
                 headers: vec![
-                    HttpHeader { key: "Referer".to_string(), value: "https://www.steamgriddb.com/".to_string()},
-                    HttpHeader { key: "Accept".to_string(), value: "application/json, text/plain, */*".to_string()},
+                    HttpHeader {
+                        key: "Referer".to_string(),
+                        value: "https://www.steamgriddb.com/".to_string(),
+                    },
+                    HttpHeader {
+                        key: "Accept".to_string(),
+                        value: "application/json, text/plain, */*".to_string(),
+                    },
                 ],
             })
         }
@@ -85,7 +91,7 @@ impl HttpRequest {
 
 pub fn handle_get_request(request: HttpRequest) -> Result<Response, Error> {
     let mut req = get(&request.url);
-    while let Some(header) = request.headers.iter().next() {
+    for header in request.headers.iter() {
         req = req.set(&header.key, &header.value);
     }
     req.call()
