@@ -1,3 +1,5 @@
+use ureq::{get, Error, Response};
+
 pub struct HttpRequest {
     pub method: HttpRequestMethod,
     pub url: String,
@@ -18,28 +20,75 @@ impl HttpRequest {
     }
 
     pub fn hero_info_request(id: &str) -> Result<Self, &'static str> {
-        todo!();
+        if id.len() < 1 {
+            Err("Invalid ID supplied")
+        } else {
+            Ok(HttpRequest {
+                method: HttpRequestMethod::GET,
+                url: "https://www.steamgriddb.com/api/public/asset/hero/".to_string() + id,
+                headers: vec![],
+            })
+        }
     }
 
     pub fn logo_info_request(id: &str) -> Result<Self, &'static str> {
-        todo!();
+        if id.len() < 1 {
+            Err("Invalid ID supplied")
+        } else {
+            Ok(HttpRequest {
+                method: HttpRequestMethod::GET,
+                url: "https://www.steamgriddb.com/api/public/asset/logo/".to_string() + id,
+                headers: vec![],
+            })
+        }
     }
 
     pub fn grid_info_request(id: &str) -> Result<Self, &'static str> {
-        todo!();
+        if id.len() < 1 {
+            Err("Invalid ID supplied")
+        } else {
+            Ok(HttpRequest {
+                method: HttpRequestMethod::GET,
+                url: "https://www.steamgriddb.com/api/public/asset/grid/".to_string() + id,
+                headers: vec![],
+            })
+        }
     }
 
     pub fn icon_info_request(id: &str) -> Result<Self, &'static str> {
-        todo!();
+        if id.len() < 1 {
+            Err("Invalid ID supplied")
+        } else {
+            Ok(HttpRequest {
+                method: HttpRequestMethod::GET,
+                url: "https://www.steamgriddb.com/api/public/asset/icon/".to_string() + id,
+                headers: vec![],
+            })
+        }
     }
 
     pub fn game_info_request(id: &str) -> Result<Self, &'static str> {
-        todo!();
+        if id.len() < 1 {
+            Err("Invalid ID supplied")
+        } else {
+            Ok(HttpRequest {
+                method: HttpRequestMethod::GET,
+                url: "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
+                headers: vec![
+                    HttpHeader { key: "Referer".to_string(), value: "https://www.steamgriddb.com/".to_string()},
+                    HttpHeader { key: "Accept".to_string(), value: "application/json, text/plain, */*".to_string()},
+                ],
+            })
+        }
     }
 }
 
-pub fn handle_get_request(request: HttpRequest) -> String {
-    todo!();
+pub fn handle_get_request(request: HttpRequest) -> Result<Response, Error> {
+    let mut req = get(&request.url);
+    while let Some(header) = request.headers.iter().next() {
+        req = req.set(&header.key, &header.value);
+    }
+    req.call()
 }
 
 pub struct HttpHeader {
@@ -56,5 +105,5 @@ pub enum HttpRequestMethod {
     OPTIONS,
     TRACE,
     PUT,
-    PATCH
+    PATCH,
 }
