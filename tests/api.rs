@@ -253,6 +253,18 @@ mod connections {
         };
     }
     #[test]
+    fn game_info_request_without_header() {
+        let request = HttpRequest::game_info_request("123");
+
+        match request {
+            Ok(mut r) => {
+                r.headers = vec![];
+                assert!(handle_get_request(r).is_err(), "HTTP request was successful, whereas it should not have been!");
+            }
+            Err(e) => panic!("Failed to create request object {e}"),
+        };
+    }
+    #[test]
     fn hero_info_request_ok() {
         let request = HttpRequest::hero_info_request("123");
 
