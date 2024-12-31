@@ -168,9 +168,9 @@ mod bodies {
                 assert_eq!(expected_ref_key, ref_header.key);
                 assert_eq!(expected_ref_val, ref_header.value);
                 assert_eq!(expected_acc_key, acc_header.key);
-                assert_eq!(expected_acc_val, ref_header.value);
+                assert_eq!(expected_acc_val, acc_header.value);
                 assert_eq!(
-                    "https://www.steamgriddb.com/api/public/asset/icon/".to_string() + id,
+                    "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
                     request.url
                 );
             }
