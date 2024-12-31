@@ -51,4 +51,10 @@ pub enum HttpRequestMethod {
     GET,
     POST,
     DELETE,
+    HEAD,
+    CONNECT,
+    OPTIONS,
+    TRACE,
+    PUT,
+    PATCH
 }
