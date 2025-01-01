@@ -1,0 +1,172 @@
+{
+  "success": true,
+  "data": {
+    "platforms": {
+      "steam": {
+        "id": "440",
+        "gameId": 10602,
+        "metadata": {
+          "store_asset_mtime": 1682961190,
+          "library_capsule": "en",
+          "library_logo": "en",
+          "library_hero": "en",
+          "steam_release_date": 1191999600,
+          "original_release_date": 1191999600,
+          "logo_position": "{\"pinned_position\":\"BottomLeft\",\"width_pct\":\"26\",\"height_pct\":\"37\"}",
+          "header_image": "english",
+          "clienticon": "033bdd91842b6aca0633ee1e5f3e6b82f2e8962f"
+        }
+      }
+    },
+    "game": {
+      "id": 10602,
+      "name": "Team Fortress 2",
+      "release_date": 1191999600,
+      "types": ["steam"],
+      "verified": true
+    },
+    "header": {
+      "external": false,
+      "externa_url": null,
+      "asset": {
+        "id": 44730,
+        "style": "alternate",
+        "width": 3840,
+        "height": 1240,
+        "nsfw": false,
+        "humor": false,
+        "notes": "<p><strong><a href=\"https://mocah.org/114311-team-fortress-2-tf2-fps-all-characters-screnshot-4k-6k-8k-ultra-hd-review-pc.html\">Modern lineup</a></strong> extended<br />\n<em><a href=\"https://www.steamgriddb.com/hero/44601\">&gt;classic</a></em></p>\n",
+        "language": "en",
+        "url": "https://cdn2.steamgriddb.com/hero/c6e9701b682ec8f4cc3f8923c1dbb1f8.png",
+        "thumb": "https://cdn2.steamgriddb.com/hero_thumb/c6e9701b682ec8f4cc3f8923c1dbb1f8.jpg",
+        "lock": false,
+        "epilepsy": false,
+        "upvotes": 0,
+        "downvotes": 0,
+        "downloads": 208,
+        "hearts": 25,
+        "can_vote": false,
+        "date": 1640090279,
+        "mime": "image/png",
+        "is_animated": false,
+        "is_deleted": false,
+        "animation_type": null,
+        "processing": false,
+        "show_boop": true,
+        "author": {
+          "name": "CluckenDip",
+          "steam64": "76561198120642113",
+          "avatar": "https://avatars.steamstatic.com/f28d01aa8699660622000414b70dae52f59f037e.jpg",
+          "badges": [
+            {
+              "id": 5,
+              "name": "Traffic Conductor",
+              "description": "Contributed to the Steam Pre-Greenlight Project.",
+              "date": 1602092843,
+              "isHidden": false
+            },
+            {
+              "id": 7,
+              "name": "Black Mesa Certified",
+              "description": "Contributed to the the GoldSrc Project.",
+              "date": 1690154963,
+              "isHidden": false
+            },
+            {
+              "id": 8,
+              "name": "Flashbackpacker",
+              "description": "Contributed to the the Flash Project.",
+              "date": 1720449368,
+              "isHidden": false
+            }
+          ]
+        }
+      }
+    },
+    "logo": {
+      "external": false,
+      "externa_url": null,
+      "asset": {
+        "id": 18732,
+        "style": "official",
+        "width": 2500,
+        "height": 530,
+        "nsfw": false,
+        "humor": false,
+        "notes": null,
+        "language": "en",
+        "url": "https://cdn2.steamgriddb.com/logo/44b4596c7a979aa7e4fc820c07fd78fe.png",
+        "thumb": "https://cdn2.steamgriddb.com/logo_thumb/44b4596c7a979aa7e4fc820c07fd78fe.png",
+        "lock": false,
+        "epilepsy": false,
+        "upvotes": 0,
+        "downvotes": 0,
+        "downloads": 278,
+        "hearts": 18,
+        "can_vote": false,
+        "date": 1594217401,
+        "mime": "image/png",
+        "is_animated": false,
+        "is_deleted": false,
+        "animation_type": null,
+        "processing": false,
+        "show_boop": true,
+        "author": {
+          "name": "Maxine",
+          "steam64": "76561198130550992",
+          "avatar": "https://avatars.steamstatic.com/eab8da0499e6e78cdc9d7b62cd4bdf8c5dc18fed.jpg",
+          "badges": [
+            {
+              "id": 7,
+              "name": "Black Mesa Certified",
+              "description": "Contributed to the the GoldSrc Project.",
+              "date": 1690154963,
+              "isHidden": false
+            },
+            {
+              "id": 5,
+              "name": "Traffic Conductor",
+              "description": "Contributed to the Steam Pre-Greenlight Project.",
+              "date": 1602092814,
+              "isHidden": false
+            }
+          ]
+        }
+      }
+    },
+    "totals": { "grids": 282, "heroes": 133, "logos": 85, "icons": 46 },
+    "itad": [
+      {
+        "id": "018d937e-fde4-72ff-a7af-45e4955a8dd6",
+        "historyLow": {
+          "all": { "amount": 19.99, "amountInt": 1999, "currency": "USD" },
+          "y1": null,
+          "m3": null
+        },
+        "deals": [
+          {
+            "shop": { "id": 61, "name": "Steam" },
+            "price": { "amount": 0, "amountInt": 0, "currency": "USD" },
+            "regular": { "amount": 0, "amountInt": 0, "currency": "USD" },
+            "cut": 0,
+            "voucher": null,
+            "storeLow": {
+              "amount": 19.99,
+              "amountInt": 1999,
+              "currency": "USD"
+            },
+            "flag": "H",
+            "drm": [],
+            "platforms": [
+              { "id": 1, "name": "Windows" },
+              { "id": 3, "name": "Linux" }
+            ],
+            "timestamp": "2024-02-11T01:47:46+01:00",
+            "expiry": null,
+            "url": "https://itad.link/018d9386-dbe3-70ab-8839-0b6bdba07044/"
+          }
+        ]
+      }
+    ]
+  }
+}
