@@ -1,4 +1,6 @@
 pub mod connectors;
+use connectors::http;
+use connectors::api_responses::*;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -59,12 +61,55 @@ impl Configuration {
         })
     }
 }
-pub fn run(config: Configuration) {
+pub fn run(config: Configuration) -> Result<(), i32> {
     dbg!(&config);
     if config.print_help {
         print_help();
-        return;
+        return Ok(());
     }
+
+    match config.grid_id {
+        Some(id) => {
+            let request = http::HttpRequest::collection_info_request(&id);
+            match request {
+                Ok(r) => {
+                    match http::handle_get_request(r) {
+                        Ok(r) => {
+                            match r.into_json::<CollectionInfo>(){
+                                Ok(collection_data) => {
+                                    return save_files(collection_data);
+                                },
+                                Err(e) => {
+                                    eprintln!("JSON format error: {e}");
+                                    return Err(3);
+                                },
+                            }
+                        },
+                        Err(e) => {
+                            eprintln!("{}: {}", e.kind(), e.to_string());
+                            return Err(3);
+                        },
+                    };
+                },
+                Err(e) => 
+                {
+                    eprintln!("Couldn't form collection request for id: {id}: {e}");
+                    return Err(3)
+                },
+            };
+        }
+        None => {
+            print_help();
+            eprintln!("Please supply a collection ID, as seen in the webpage URL: https://www.steamgriddb.com/collection/<id>");
+            return Err(10);
+        }
+    };
+
+}
+
+fn save_files(collection_json: CollectionInfo) -> Result<(), i32> {
+    todo!();
+    Ok(())
 }
 
 pub fn print_help() {

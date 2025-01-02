@@ -6,5 +6,10 @@ fn main() {
         steamgriddb_dl::print_help();
         process::exit(10);
     });
-    steamgriddb_dl::run(config);
+    match steamgriddb_dl::run(config) {
+        Ok(_) => (),
+        Err(status_code) => {
+            process::exit(status_code);
+        },
+    }
 }
