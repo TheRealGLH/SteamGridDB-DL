@@ -137,8 +137,15 @@ fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
 
     match http::handle_get_request(request) {
         Ok(r) => {
-            if let Ok(body) = r.into_string() {
-                return fs::write(path, body);
+            let mut reader = r.into_reader();
+            match fs::File::create(path) {
+                Ok(mut f) => {
+                    if let Err(e) = std::io::copy(&mut reader, &mut f){
+                        return Err(e);
+                    }
+                   return Ok(())
+                },
+                Err(e) => return Err(e),
             }
         }
         Err(e) => {
@@ -146,8 +153,4 @@ fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
             return Err(Error::new(std::io::ErrorKind::Other, e.to_string()));
         }
     };
-    return Err(Error::new(
-        std::io::ErrorKind::Other,
-        "Unknown read/ write error",
-    ));
 }
