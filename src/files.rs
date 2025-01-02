@@ -88,15 +88,12 @@ fn extract_path_from_asset(asset: &Asset, gamedata: &mut HashMap<u32, GameData>)
                     match g.into_json::<GameResponse>() {
                         Ok(response) => {
                             //dbg!(&response.data);
-                            match response.data {
-                                Some(response_gamedata) => {
-                                    //dbg!(&response_gamedata);
-                                    let path =
-                                        extract_path_item_prefix_from_gamedata(&response_gamedata);
-                                    gamedata.insert(asset.game.id, response_gamedata);
-                                    return path;
-                                }
-                                None => todo!(),
+                            if let Some(response_gamedata) = response.data {
+                                //dbg!(&response_gamedata);
+                                let path =
+                                    extract_path_item_prefix_from_gamedata(&response_gamedata);
+                                gamedata.insert(asset.game.id, response_gamedata);
+                                return path;
                             }
                         }
                         Err(e) => {
@@ -140,11 +137,11 @@ fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
             let mut reader = r.into_reader();
             match fs::File::create(path) {
                 Ok(mut f) => {
-                    if let Err(e) = std::io::copy(&mut reader, &mut f){
+                    if let Err(e) = std::io::copy(&mut reader, &mut f) {
                         return Err(e);
                     }
-                   return Ok(())
-                },
+                    return Ok(());
+                }
                 Err(e) => return Err(e),
             }
         }
