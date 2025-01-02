@@ -33,6 +33,15 @@ mod bodies {
         );
     }
     #[test]
+    fn collection_info_http_request_with_invalid_id() {
+        let id = "-d";
+        let request = HttpRequest::collection_info_request(&id);
+        assert!(
+            request.is_err(),
+            "Request was formed, while it shouldn't have been."
+        );
+    }
+    #[test]
     fn hero_info_http_request_from_id() {
         let id = "123";
         let request = HttpRequest::hero_info_request(&id);

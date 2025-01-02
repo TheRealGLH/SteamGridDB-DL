@@ -8,7 +8,7 @@ pub struct HttpRequest {
 
 impl HttpRequest {
     pub fn collection_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.len() < 1 || id.parse::<u32>().is_err() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
