@@ -14,7 +14,7 @@ mod bodies {
                 );
                 assert!(request.headers.len() < 1, "Headers are not empty");
                 assert_eq!(
-                    "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
+                    "https://www.steamgriddb.com/api/public/collection/".to_string() + id + "/home",
                     request.url
                 );
             }

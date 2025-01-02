@@ -13,7 +13,7 @@ impl HttpRequest {
         } else {
             Ok(HttpRequest {
                 method: HttpRequestMethod::GET,
-                url: "https://www.steamgriddb.com/api/public/collection/".to_string() + id,
+                url: "https://www.steamgriddb.com/api/public/collection/".to_string() + id + "/home",
                 headers: vec![],
             })
         }
