@@ -9,6 +9,7 @@ fn main() {
     match steamgriddb_dl::run(config) {
         Ok(_) => (),
         Err(status_code) => {
+            println!("If you believe this is not your fault and you followed the instructions carefully, do make an issue report at: https://github.com/TheRealGLH/SteamGridDB-DL/issues/new");
             process::exit(status_code);
         },
     }
