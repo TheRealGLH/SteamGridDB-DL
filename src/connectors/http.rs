@@ -73,6 +73,7 @@ impl HttpRequest {
         } else {
             Ok(HttpRequest {
                 method: HttpRequestMethod::GET,
+                //url: "https://www.steamgriddb.com/api/public/game/".to_string() + id + "/home",
                 url: "https://www.steamgriddb.com/api/public/game/".to_string() + id,
                 headers: vec![
                     HttpHeader {

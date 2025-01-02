@@ -200,7 +200,7 @@ mod bodies {
 
 #[cfg(test)]
 mod connections {
-    use steamgriddb_dl::connectors::http::*;
+    use steamgriddb_dl::connectors::{api_responses::GameResponse, http::*};
     #[test]
     fn get_request_without_headers() {
         let expected_status: u16 = 200;
@@ -244,16 +244,17 @@ mod connections {
 
     #[test]
     fn game_info_request_ok() {
-        let request = HttpRequest::game_info_request("123");
+        let request = HttpRequest::game_info_request("5248561");
 
         match request {
             Ok(r) => {
                 match handle_get_request(r) {
                     Ok(response) => {
                         assert_eq!(response.status(), 200);
-                        let response_body = response.into_string();
+                        let response_body = response.into_json::<GameResponse>();
+
+                        dbg!(&response_body);
                         assert!(response_body.is_ok());
-                        response_body.unwrap();
                     }
                     Err(e) => panic!("Http error: {e}"),
                 };

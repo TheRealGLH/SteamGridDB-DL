@@ -1,6 +1,9 @@
 pub mod connectors;
-use connectors::http;
+mod files;
+
 use connectors::api_responses::*;
+use connectors::http;
+use files::*;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -74,28 +77,29 @@ pub fn run(config: Configuration) -> Result<(), i32> {
             match request {
                 Ok(r) => {
                     match http::handle_get_request(r) {
-                        Ok(r) => {
-                            match r.into_json::<CollectionInfo>(){
-                                Ok(collection_data) => {
-                                    return save_files(collection_data);
-                                },
-                                Err(e) => {
-                                    eprintln!("JSON format error: {e}");
-                                    return Err(3);
-                                },
+                        Ok(r) => match r.into_json::<CollectionResponse>() {
+                            Ok(collection_response) => {
+                                return save_files(
+                                    collection_response,
+                                    String::from("/tmp/steamgriddb/"),
+                                    config.dry_run,
+                                );
+                            }
+                            Err(e) => {
+                                eprintln!("JSON format error: {e}");
+                                return Err(3);
                             }
                         },
                         Err(e) => {
                             eprintln!("{}: {}", e.kind(), e.to_string());
                             return Err(3);
-                        },
+                        }
                     };
-                },
-                Err(e) => 
-                {
+                }
+                Err(e) => {
                     eprintln!("Couldn't form collection request for id: {id}: {e}");
-                    return Err(3)
-                },
+                    return Err(3);
+                }
             };
         }
         None => {
@@ -104,12 +108,6 @@ pub fn run(config: Configuration) -> Result<(), i32> {
             return Err(10);
         }
     };
-
-}
-
-fn save_files(collection_json: CollectionInfo) -> Result<(), i32> {
-    todo!();
-    Ok(())
 }
 
 pub fn print_help() {
