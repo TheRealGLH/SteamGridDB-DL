@@ -70,7 +70,7 @@ pub fn run(config: Configuration) -> Result<(), i32> {
         print_help();
         return Ok(());
     }
-
+    let mut directory = config.override_directory.unwrap_or(get_steam_directory());
     match config.grid_id {
         Some(id) => {
             let request = http::HttpRequest::collection_info_request(&id);
@@ -79,9 +79,12 @@ pub fn run(config: Configuration) -> Result<(), i32> {
                     match http::handle_get_request(r) {
                         Ok(r) => match r.into_json::<CollectionResponse>() {
                             Ok(collection_response) => {
+                                if !directory.ends_with('/') {
+                                    directory = directory + "/"
+                                }
                                 return save_files(
                                     collection_response,
-                                    String::from("/tmp/steamgriddb/"),
+                                    directory,
                                     config.dry_run,
                                 );
                             }
@@ -112,4 +115,8 @@ pub fn run(config: Configuration) -> Result<(), i32> {
 
 pub fn print_help() {
     println!("usage: steamgriddb-dl <grid id> [--directory=<path>]");
+}
+
+fn get_steam_directory() -> String{
+    String::from("/tmp/steamgriddb/")
 }

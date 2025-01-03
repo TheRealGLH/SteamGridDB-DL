@@ -7,10 +7,6 @@ pub fn save_files(
     directory: String,
     dry_run: bool,
 ) -> Result<(), i32> {
-    if let Err(e) = fs::create_dir_all(&directory) {
-        eprintln!("Error creating directory: {e}");
-        return Err(3);
-    }
     match collection_json.data {
         Some(collection_data) => {
             let mut gamedata_map: HashMap<u32, GameData> = HashMap::new();
@@ -122,6 +118,16 @@ fn extract_path_item_prefix_from_gamedata(gamedata: &GameData) -> String {
 }
 
 fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
+    //Why is this not a singular if-statement?
+    //Here's why: https://github.com/rust-lang/rust/issues/53667
+    if !dry_run {
+        if let Some(directory) = path.rsplit_once("/") {
+            if let Err(e) = fs::create_dir_all(directory.0) {
+                eprintln!("Error creating directory: {e}");
+                return Err(e);
+            }
+        }
+    }
     println!("Saving file {}", path);
     if dry_run {
         return Ok(());
