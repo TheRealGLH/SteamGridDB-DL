@@ -4,6 +4,10 @@ mod files;
 use connectors::api_responses::*;
 use connectors::http;
 use files::*;
+use std::env;
+use std::fs;
+use std::fs::DirEntry;
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -82,11 +86,7 @@ pub fn run(config: Configuration) -> Result<(), i32> {
                                 if !directory.ends_with('/') {
                                     directory = directory + "/"
                                 }
-                                return save_files(
-                                    collection_response,
-                                    directory,
-                                    config.dry_run,
-                                );
+                                return save_files(collection_response, directory, config.dry_run);
                             }
                             Err(e) => {
                                 eprintln!("JSON format error: {e}");
@@ -117,6 +117,41 @@ pub fn print_help() {
     println!("usage: steamgriddb-dl <grid id> [--directory=<path>]");
 }
 
-fn get_steam_directory() -> String{
-    String::from("/tmp/steamgriddb/")
+//TODO: This whole function is completely awful and needs a top to bottom rewrite.
+fn get_steam_directory() -> String {
+    let mut basedir = String::new();
+    match env::consts::OS {
+        "linux" => {
+            basedir = env::home_dir()
+                .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
+                .to_str()
+                .unwrap()
+                .to_string()
+                + "/.steam/steam/userdata";
+        }
+        "macos" => {
+            basedir = env::home_dir()
+                .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
+                .to_str()
+                .unwrap()
+                .to_string()
+                + "/Library/Application Support/Steam/userdata";
+        }
+
+        "windows" => basedir += "C:\\Program Files (x86)\\Steam\\userdata",
+        _ => return String::from("/tmp/steamgriddb/"),
+    }
+    if let Ok(read_dir) = fs::read_dir(&basedir) {
+        //me when I
+        if let Some(last) = read_dir.last() {
+            if let Ok(dir_result) = last {
+                //because I am ballsey.
+                basedir = dir_result.path().to_str().unwrap().to_string() + "/config/grid";
+            }
+        }
+    } else {
+        eprintln!("Couldn't locate the userdata folder, which is normally located at <wherever you installed steam>/userdata/<user number>/config/grid. The items will be downloaded, but to a fallback directory.\n Try rerunning the program with the --directory flag as shown in the instructions to manually set it.");
+    }
+
+    return basedir;
 }

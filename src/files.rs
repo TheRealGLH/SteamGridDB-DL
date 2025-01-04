@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, io::Error};
+use std::{collections::HashMap, fs, io::Error, path::Path};
 
 use crate::{connectors::http, Asset, CollectionResponse, GameData, GameResponse};
 
@@ -18,7 +18,7 @@ pub fn save_files(
                     hero.url.as_str(),
                     dry_run,
                 ) {
-                    eprintln!("Error saving file: {e}");
+                    eprintln!("Error saving file {directory}{filename}_hero.{extension}: {e}");
                     return Err(128);
                 }
             }
