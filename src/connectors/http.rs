@@ -8,7 +8,7 @@ pub struct HttpRequest {
 
 impl HttpRequest {
     pub fn collection_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 || id.parse::<u32>().is_err() {
+        if id.is_empty() || id.parse::<u32>().is_err() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
@@ -20,7 +20,7 @@ impl HttpRequest {
     }
 
     pub fn hero_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
@@ -32,7 +32,7 @@ impl HttpRequest {
     }
 
     pub fn logo_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
@@ -44,7 +44,7 @@ impl HttpRequest {
     }
 
     pub fn grid_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
@@ -56,7 +56,7 @@ impl HttpRequest {
     }
 
     pub fn icon_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {
@@ -68,7 +68,7 @@ impl HttpRequest {
     }
 
     pub fn game_info_request(id: &str) -> Result<Self, &'static str> {
-        if id.len() < 1 {
+        if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
             Ok(HttpRequest {

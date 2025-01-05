@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, io::Error, path::Path};
+use std::{collections::HashMap, fs, io::Error};
 
 use crate::{connectors::http, Asset, CollectionResponse, GameData, GameResponse};
 
@@ -70,7 +70,7 @@ pub fn save_files(
 fn extract_path_from_asset(asset: &Asset, gamedata: &mut HashMap<u32, GameData>) -> String {
     match gamedata.get(&asset.game.id) {
         Some(asset_gamedata) => {
-            return extract_path_item_prefix_from_gamedata(&asset_gamedata);
+            return extract_path_item_prefix_from_gamedata(asset_gamedata);
         }
         None => {
             //TODO: find the game data ourselves and parse it
@@ -101,7 +101,7 @@ fn extract_path_from_asset(asset: &Asset, gamedata: &mut HashMap<u32, GameData>)
             }
         }
     }
-    return asset.game.id.to_string() + "/";
+    asset.game.id.to_string() + "/"
 }
 
 fn extract_path_item_prefix_from_gamedata(gamedata: &GameData) -> String {
@@ -114,7 +114,7 @@ fn extract_path_item_prefix_from_gamedata(gamedata: &GameData) -> String {
         "Could not find a Steam ID for {}, look for it in the {} folder",
         gamedata.game.name, gamedata.game.id
     );
-    return gamedata.game.id.to_string() + "/";
+    gamedata.game.id.to_string() + "/"
 }
 
 fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
@@ -143,17 +143,15 @@ fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
             let mut reader = r.into_reader();
             match fs::File::create(path) {
                 Ok(mut f) => {
-                    if let Err(e) = std::io::copy(&mut reader, &mut f) {
-                        return Err(e);
-                    }
-                    return Ok(());
+                    std::io::copy(&mut reader, &mut f)?;
+                    Ok(())
                 }
-                Err(e) => return Err(e),
+                Err(e) => Err(e),
             }
         }
         Err(e) => {
             eprintln!("{e}");
-            return Err(Error::new(std::io::ErrorKind::Other, e.to_string()));
+            Err(Error::new(std::io::ErrorKind::Other, e.to_string()))
         }
-    };
+    }
 }

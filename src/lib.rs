@@ -7,7 +7,6 @@ use files::*;
 use std::env;
 use std::fs;
 use std::fs::DirEntry;
-use std::path::Path;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -41,7 +40,7 @@ impl Configuration {
             }
         };
 
-        while let Some(arg) = args.next() {
+        for arg in args {
             match arg.as_str() {
                 "-h" => print_help = true,
                 "-n" => dry_run = true,
@@ -84,33 +83,33 @@ pub fn run(config: Configuration) -> Result<(), i32> {
                         Ok(r) => match r.into_json::<CollectionResponse>() {
                             Ok(collection_response) => {
                                 if !directory.ends_with('/') {
-                                    directory = directory + "/"
+                                    directory += "/"
                                 }
-                                return save_files(collection_response, directory, config.dry_run);
+                                save_files(collection_response, directory, config.dry_run)
                             }
                             Err(e) => {
                                 eprintln!("JSON format error: {e}");
-                                return Err(3);
+                                Err(3)
                             }
                         },
                         Err(e) => {
-                            eprintln!("{}: {}", e.kind(), e.to_string());
-                            return Err(3);
+                            eprintln!("{}: {}", e.kind(), e);
+                            Err(3)
                         }
-                    };
+                    }
                 }
                 Err(e) => {
                     eprintln!("Couldn't form collection request for id: {id}: {e}");
-                    return Err(3);
+                    Err(3)
                 }
-            };
+            }
         }
         None => {
             print_help();
             eprintln!("Please supply a collection ID, as seen in the webpage URL: https://www.steamgriddb.com/collection/<id>");
-            return Err(10);
+            Err(10)
         }
-    };
+    }
 }
 
 pub fn print_help() {
@@ -147,7 +146,7 @@ fn guess_steam_directory() -> String {
         for dir_result in read_dir {
             if let Ok(dir_entry) = dir_result {
                 if let Ok(file_type) = dir_entry.file_type() {
-                    if (file_type.is_dir()) {
+                    if file_type.is_dir() {
                         previous_dir = Some(dir_entry);
                     } else {
                         break;
@@ -162,5 +161,5 @@ fn guess_steam_directory() -> String {
         eprintln!("Couldn't locate the userdata folder, which is normally located at <wherever you installed steam>/userdata/<user number>/config/grid. The items will be downloaded, but to a fallback directory.\n Try rerunning the program with the --directory flag as shown in the instructions to manually set it.");
     }
 
-    return base_dir;
+    base_dir
 }
