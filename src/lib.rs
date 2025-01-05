@@ -1,6 +1,13 @@
 pub mod connectors;
-use connectors::http;
+mod files;
+
 use connectors::api_responses::*;
+use connectors::http;
+use files::*;
+use std::env;
+use std::fs;
+use std::fs::DirEntry;
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -67,35 +74,35 @@ pub fn run(config: Configuration) -> Result<(), i32> {
         print_help();
         return Ok(());
     }
-
+    let mut directory = config.override_directory.unwrap_or(guess_steam_directory());
     match config.grid_id {
         Some(id) => {
             let request = http::HttpRequest::collection_info_request(&id);
             match request {
                 Ok(r) => {
                     match http::handle_get_request(r) {
-                        Ok(r) => {
-                            match r.into_json::<CollectionInfo>(){
-                                Ok(collection_data) => {
-                                    return save_files(collection_data);
-                                },
-                                Err(e) => {
-                                    eprintln!("JSON format error: {e}");
-                                    return Err(3);
-                                },
+                        Ok(r) => match r.into_json::<CollectionResponse>() {
+                            Ok(collection_response) => {
+                                if !directory.ends_with('/') {
+                                    directory = directory + "/"
+                                }
+                                return save_files(collection_response, directory, config.dry_run);
+                            }
+                            Err(e) => {
+                                eprintln!("JSON format error: {e}");
+                                return Err(3);
                             }
                         },
                         Err(e) => {
                             eprintln!("{}: {}", e.kind(), e.to_string());
                             return Err(3);
-                        },
+                        }
                     };
-                },
-                Err(e) => 
-                {
+                }
+                Err(e) => {
                     eprintln!("Couldn't form collection request for id: {id}: {e}");
-                    return Err(3)
-                },
+                    return Err(3);
+                }
             };
         }
         None => {
@@ -104,14 +111,56 @@ pub fn run(config: Configuration) -> Result<(), i32> {
             return Err(10);
         }
     };
-
-}
-
-fn save_files(collection_json: CollectionInfo) -> Result<(), i32> {
-    todo!();
-    Ok(())
 }
 
 pub fn print_help() {
     println!("usage: steamgriddb-dl <grid id> [--directory=<path>]");
+}
+
+//TODO: This whole function is completely awful and needs a top to bottom rewrite.
+//at the very least it should return a Result<String, Err> instead of just a String
+fn guess_steam_directory() -> String {
+    let mut base_dir = String::new();
+    match env::consts::OS {
+        "linux" => {
+            base_dir = env::home_dir()
+                .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
+                .to_str()
+                .unwrap()
+                .to_string()
+                + "/.steam/steam/userdata";
+        }
+        "macos" => {
+            base_dir = env::home_dir()
+                .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
+                .to_str()
+                .unwrap()
+                .to_string()
+                + "/Library/Application Support/Steam/userdata";
+        }
+
+        "windows" => base_dir += "C:\\Program Files (x86)\\Steam\\userdata",
+        _ => return String::from("/tmp/steamgriddb/"),
+    }
+    if let Ok(read_dir) = fs::read_dir(&base_dir) {
+        let mut previous_dir: Option<DirEntry> = None;
+        for dir_result in read_dir {
+            if let Ok(dir_entry) = dir_result {
+                if let Ok(file_type) = dir_entry.file_type() {
+                    if (file_type.is_dir()) {
+                        previous_dir = Some(dir_entry);
+                    } else {
+                        break;
+                    };
+                }
+            }
+        }
+        if let Some(selected_dir) = previous_dir {
+            base_dir += &(selected_dir.path().to_str().unwrap().to_string() + "/config/grid");
+        }
+    } else {
+        eprintln!("Couldn't locate the userdata folder, which is normally located at <wherever you installed steam>/userdata/<user number>/config/grid. The items will be downloaded, but to a fallback directory.\n Try rerunning the program with the --directory flag as shown in the instructions to manually set it.");
+    }
+
+    return base_dir;
 }
