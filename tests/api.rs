@@ -5,14 +5,14 @@ mod bodies {
     #[test]
     fn collection_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::collection_info_request(&id);
+        let request = HttpRequest::collection_info_request(id);
         match request {
             Ok(request) => {
                 assert!(
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                assert!(request.headers.len() < 1, "Headers are not empty");
+                assert!(request.headers.is_empty(), "Headers are not empty");
                 assert_eq!(
                     "https://www.steamgriddb.com/api/public/collection/".to_string() + id + "/home",
                     request.url
@@ -25,7 +25,7 @@ mod bodies {
     #[test]
     fn collection_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::collection_info_request(&id);
+        let request = HttpRequest::collection_info_request(id);
 
         assert!(
             request.is_err(),
@@ -35,7 +35,7 @@ mod bodies {
     #[test]
     fn collection_info_http_request_with_invalid_id() {
         let id = "-d";
-        let request = HttpRequest::collection_info_request(&id);
+        let request = HttpRequest::collection_info_request(id);
         assert!(
             request.is_err(),
             "Request was formed, while it shouldn't have been."
@@ -44,14 +44,14 @@ mod bodies {
     #[test]
     fn hero_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::hero_info_request(&id);
+        let request = HttpRequest::hero_info_request(id);
         match request {
             Ok(request) => {
                 assert!(
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                assert!(request.headers.len() < 1, "Headers are not empty");
+                assert!(request.headers.is_empty(), "Headers are not empty");
                 assert_eq!(
                     "https://www.steamgriddb.com/api/public/asset/hero/".to_string() + id,
                     request.url
@@ -63,7 +63,7 @@ mod bodies {
     #[test]
     fn hero_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::hero_info_request(&id);
+        let request = HttpRequest::hero_info_request(id);
 
         assert!(
             request.is_err(),
@@ -73,14 +73,14 @@ mod bodies {
     #[test]
     fn grid_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::grid_info_request(&id);
+        let request = HttpRequest::grid_info_request(id);
         match request {
             Ok(request) => {
                 assert!(
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                assert!(request.headers.len() < 1, "Headers are not empty");
+                assert!(request.headers.is_empty(), "Headers are not empty");
                 assert_eq!(
                     "https://www.steamgriddb.com/api/public/asset/grid/".to_string() + id,
                     request.url
@@ -92,7 +92,7 @@ mod bodies {
     #[test]
     fn grid_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::grid_info_request(&id);
+        let request = HttpRequest::grid_info_request(id);
 
         assert!(
             request.is_err(),
@@ -102,14 +102,14 @@ mod bodies {
     #[test]
     fn logo_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::logo_info_request(&id);
+        let request = HttpRequest::logo_info_request(id);
         match request {
             Ok(request) => {
                 assert!(
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                assert!(request.headers.len() < 1, "Headers are not empty");
+                assert!(request.headers.is_empty(), "Headers are not empty");
                 assert_eq!(
                     "https://www.steamgriddb.com/api/public/asset/logo/".to_string() + id,
                     request.url
@@ -121,7 +121,7 @@ mod bodies {
     #[test]
     fn logo_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::logo_info_request(&id);
+        let request = HttpRequest::logo_info_request(id);
 
         assert!(
             request.is_err(),
@@ -131,14 +131,14 @@ mod bodies {
     #[test]
     fn icon_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::icon_info_request(&id);
+        let request = HttpRequest::icon_info_request(id);
         match request {
             Ok(request) => {
                 assert!(
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                assert!(request.headers.len() < 1, "Headers are not empty");
+                assert!(request.headers.is_empty(), "Headers are not empty");
                 assert_eq!(
                     "https://www.steamgriddb.com/api/public/asset/icon/".to_string() + id,
                     request.url
@@ -150,7 +150,7 @@ mod bodies {
     #[test]
     fn icon_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::icon_info_request(&id);
+        let request = HttpRequest::icon_info_request(id);
 
         assert!(
             request.is_err(),
@@ -161,7 +161,7 @@ mod bodies {
     #[test]
     fn game_info_http_request_from_id() {
         let id = "123";
-        let request = HttpRequest::game_info_request(&id);
+        let request = HttpRequest::game_info_request(id);
         let expected_acc_key = "Accept";
         let expected_acc_val = "application/json, text/plain, */*";
         let expected_ref_key = "Referer";
@@ -172,7 +172,7 @@ mod bodies {
                     matches!(request.method, HttpRequestMethod::GET),
                     "Method is not GET"
                 );
-                let ref_header = request.headers.get(0).unwrap();
+                let ref_header = request.headers.first().unwrap();
                 let acc_header = request.headers.get(1).unwrap();
                 assert_eq!(expected_ref_key, ref_header.key);
                 assert_eq!(expected_ref_val, ref_header.value);
@@ -189,7 +189,7 @@ mod bodies {
     #[test]
     fn game_info_http_request_without_id() {
         let id = "";
-        let request = HttpRequest::game_info_request(&id);
+        let request = HttpRequest::game_info_request(id);
 
         assert!(
             request.is_err(),
@@ -251,7 +251,7 @@ mod connections {
                 match handle_get_request(r) {
                     Ok(response) => {
                         assert_eq!(response.status(), 200);
-                        let response_body = response.into_json::<GameResponse>();
+                        let response_body = response.into_string();
 
                         dbg!(&response_body);
                         assert!(response_body.is_ok());

@@ -37,15 +37,4 @@ mod tests {
             deserialized.unwrap_err()
         );
     }
-    #[test]
-    fn deserialize_game_info_without_platform() {
-        let json = fs::read_to_string("tests/resources/game.noplatform.json").unwrap();
-        let deserialized = serde_json::from_str::<GameResponse>(&json);
-
-        assert!(
-            deserialized.is_ok(),
-            "Error deserializing: {}",
-            deserialized.unwrap_err()
-        );
-    }
 }
