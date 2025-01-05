@@ -11,7 +11,7 @@ impl HttpRequest {
         if id.is_empty() || id.parse::<u32>().is_err() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 url: "https://www.steamgriddb.com/api/public/collection/".to_string() + id + "/home",
                 headers: vec![],
@@ -23,7 +23,7 @@ impl HttpRequest {
         if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 url: "https://www.steamgriddb.com/api/public/asset/hero/".to_string() + id,
                 headers: vec![],
@@ -35,7 +35,7 @@ impl HttpRequest {
         if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 url: "https://www.steamgriddb.com/api/public/asset/logo/".to_string() + id,
                 headers: vec![],
@@ -47,7 +47,7 @@ impl HttpRequest {
         if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 url: "https://www.steamgriddb.com/api/public/asset/grid/".to_string() + id,
                 headers: vec![],
@@ -59,7 +59,7 @@ impl HttpRequest {
         if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 url: "https://www.steamgriddb.com/api/public/asset/icon/".to_string() + id,
                 headers: vec![],
@@ -71,7 +71,7 @@ impl HttpRequest {
         if id.is_empty() {
             Err("Invalid ID supplied")
         } else {
-            Ok(HttpRequest {
+            Ok(Self {
                 method: HttpRequestMethod::GET,
                 //url: "https://www.steamgriddb.com/api/public/game/".to_string() + id + "/home",
                 url: "https://www.steamgriddb.com/api/public/game/".to_string() + id,
@@ -92,7 +92,7 @@ impl HttpRequest {
 
 pub fn handle_get_request(request: HttpRequest) -> Result<Response, Error> {
     let mut req = get(&request.url);
-    for header in request.headers.iter() {
+    for header in &request.headers {
         req = req.set(&header.key, &header.value);
     }
     req.call()
