@@ -74,7 +74,7 @@ pub fn run(config: Configuration) -> Result<(), i32> {
         print_help();
         return Ok(());
     }
-    let mut directory = config.override_directory.unwrap_or(get_steam_directory());
+    let mut directory = config.override_directory.unwrap_or(guess_steam_directory());
     match config.grid_id {
         Some(id) => {
             let request = http::HttpRequest::collection_info_request(&id);
@@ -118,11 +118,12 @@ pub fn print_help() {
 }
 
 //TODO: This whole function is completely awful and needs a top to bottom rewrite.
-fn get_steam_directory() -> String {
-    let mut basedir = String::new();
+//at the very least it should return a Result<String, Err> instead of just a String
+fn guess_steam_directory() -> String {
+    let mut base_dir = String::new();
     match env::consts::OS {
         "linux" => {
-            basedir = env::home_dir()
+            base_dir = env::home_dir()
                 .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
                 .to_str()
                 .unwrap()
@@ -130,7 +131,7 @@ fn get_steam_directory() -> String {
                 + "/.steam/steam/userdata";
         }
         "macos" => {
-            basedir = env::home_dir()
+            base_dir = env::home_dir()
                 .unwrap_or_else(|| std::path::PathBuf::from("/home/"))
                 .to_str()
                 .unwrap()
@@ -138,20 +139,28 @@ fn get_steam_directory() -> String {
                 + "/Library/Application Support/Steam/userdata";
         }
 
-        "windows" => basedir += "C:\\Program Files (x86)\\Steam\\userdata",
+        "windows" => base_dir += "C:\\Program Files (x86)\\Steam\\userdata",
         _ => return String::from("/tmp/steamgriddb/"),
     }
-    if let Ok(read_dir) = fs::read_dir(&basedir) {
-        //me when I
-        if let Some(last) = read_dir.last() {
-            if let Ok(dir_result) = last {
-                //because I am ballsey.
-                basedir = dir_result.path().to_str().unwrap().to_string() + "/config/grid";
+    if let Ok(read_dir) = fs::read_dir(&base_dir) {
+        let mut previous_dir: Option<DirEntry> = None;
+        for dir_result in read_dir {
+            if let Ok(dir_entry) = dir_result {
+                if let Ok(file_type) = dir_entry.file_type() {
+                    if (file_type.is_dir()) {
+                        previous_dir = Some(dir_entry);
+                    } else {
+                        break;
+                    };
+                }
             }
+        }
+        if let Some(selected_dir) = previous_dir {
+            base_dir += &(selected_dir.path().to_str().unwrap().to_string() + "/config/grid");
         }
     } else {
         eprintln!("Couldn't locate the userdata folder, which is normally located at <wherever you installed steam>/userdata/<user number>/config/grid. The items will be downloaded, but to a fallback directory.\n Try rerunning the program with the --directory flag as shown in the instructions to manually set it.");
     }
 
-    return basedir;
+    return base_dir;
 }
