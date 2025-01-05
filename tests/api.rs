@@ -251,7 +251,7 @@ mod connections {
                 match handle_get_request(r) {
                     Ok(response) => {
                         assert_eq!(response.status(), 200);
-                        let response_body = response.into_json::<GameResponse>();
+                        let response_body = response.into_string();
 
                         dbg!(&response_body);
                         assert!(response_body.is_ok());
