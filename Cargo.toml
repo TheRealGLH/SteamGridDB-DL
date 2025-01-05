@@ -1,6 +1,6 @@
 [package]
 name = "steamgriddb-dl"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "A CLI utility for downloading content from www.steamgriddb.com"
 repository = "https://github.com/TheRealGLH/SteamGridDB-DL"

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, io::Error, path::Path};
+use std::{collections::HashMap, fs, io::Error};
 
 use crate::{connectors::http, Asset, CollectionResponse, GameData, GameResponse};
 
@@ -7,62 +7,59 @@ pub fn save_files(
     directory: String,
     dry_run: bool,
 ) -> Result<(), i32> {
-    match collection_json.data {
-        Some(collection_data) => {
-            let mut gamedata_map: HashMap<u32, GameData> = HashMap::new();
-            for hero in collection_data.heroes.iter() {
-                let filename = extract_path_from_asset(hero, &mut gamedata_map);
-                let extension = hero.url.rsplit_once('.').unwrap_or(("", ".png")).1;
-                if let Err(e) = save_image(
-                    &format!("{directory}{filename}_hero.{extension}"),
-                    hero.url.as_str(),
-                    dry_run,
-                ) {
-                    eprintln!("Error saving file {directory}{filename}_hero.{extension}: {e}");
-                    return Err(128);
-                }
-            }
-            for grid in collection_data.grids.iter() {
-                let filename = extract_path_from_asset(grid, &mut gamedata_map);
-                let extension = grid.url.rsplit_once('.').unwrap_or(("", ".png")).1;
-                if let Err(e) = save_image(
-                    &format!("{directory}{filename}p.{extension}"),
-                    grid.url.as_str(),
-                    dry_run,
-                ) {
-                    eprintln!("Error saving file: {e}");
-                    return Err(128);
-                }
-            }
-            for icon in collection_data.icons.iter() {
-                let filename = extract_path_from_asset(icon, &mut gamedata_map);
-                let extension = icon.url.rsplit_once('.').unwrap_or(("", ".png")).1;
-                if let Err(e) = save_image(
-                    &format!("{directory}{filename}_icon.{extension}"),
-                    icon.url.as_str(),
-                    dry_run,
-                ) {
-                    eprintln!("Error saving file: {e}");
-                    return Err(128);
-                }
-            }
-            for logo in collection_data.logos.iter() {
-                let filename = extract_path_from_asset(logo, &mut gamedata_map);
-                let extension = logo.url.rsplit_once('.').unwrap_or(("", ".png")).1;
-                if let Err(e) = save_image(
-                    &format!("{directory}{filename}_logo.{extension}"),
-                    logo.url.as_str(),
-                    dry_run,
-                ) {
-                    eprintln!("Error saving file: {e}");
-                    return Err(128);
-                }
+    if let Some(collection_data) = collection_json.data {
+        let mut gamedata_map: HashMap<u32, GameData> = HashMap::new();
+        for hero in &collection_data.heroes {
+            let filename = extract_path_from_asset(hero, &mut gamedata_map);
+            let extension = hero.url.rsplit_once('.').unwrap_or(("", ".png")).1;
+            if let Err(e) = save_image(
+                &format!("{directory}{filename}_hero.{extension}"),
+                hero.url.as_str(),
+                dry_run,
+            ) {
+                eprintln!("Error saving file {directory}{filename}_hero.{extension}: {e}");
+                return Err(128);
             }
         }
-        None => {
-            eprintln!("Somehow requesting the collection succeeded, but there was no data.");
-            return Err(200);
+        for grid in &collection_data.grids {
+            let filename = extract_path_from_asset(grid, &mut gamedata_map);
+            let extension = grid.url.rsplit_once('.').unwrap_or(("", ".png")).1;
+            if let Err(e) = save_image(
+                &format!("{directory}{filename}p.{extension}"),
+                grid.url.as_str(),
+                dry_run,
+            ) {
+                eprintln!("Error saving file: {e}");
+                return Err(128);
+            }
         }
+        for icon in &collection_data.icons {
+            let filename = extract_path_from_asset(icon, &mut gamedata_map);
+            let extension = icon.url.rsplit_once('.').unwrap_or(("", ".png")).1;
+            if let Err(e) = save_image(
+                &format!("{directory}{filename}_icon.{extension}"),
+                icon.url.as_str(),
+                dry_run,
+            ) {
+                eprintln!("Error saving file: {e}");
+                return Err(128);
+            }
+        }
+        for logo in &collection_data.logos {
+            let filename = extract_path_from_asset(logo, &mut gamedata_map);
+            let extension = logo.url.rsplit_once('.').unwrap_or(("", ".png")).1;
+            if let Err(e) = save_image(
+                &format!("{directory}{filename}_logo.{extension}"),
+                logo.url.as_str(),
+                dry_run,
+            ) {
+                eprintln!("Error saving file: {e}");
+                return Err(128);
+            }
+        }
+    } else {
+        eprintln!("Somehow requesting the collection succeeded, but there was no data.");
+        return Err(200);
     };
     Ok(())
 }
@@ -70,7 +67,7 @@ pub fn save_files(
 fn extract_path_from_asset(asset: &Asset, gamedata: &mut HashMap<u32, GameData>) -> String {
     match gamedata.get(&asset.game.id) {
         Some(asset_gamedata) => {
-            return extract_path_item_prefix_from_gamedata(&asset_gamedata);
+            return extract_path_item_prefix_from_gamedata(asset_gamedata);
         }
         None => {
             //TODO: find the game data ourselves and parse it
@@ -97,11 +94,11 @@ fn extract_path_from_asset(asset: &Asset, gamedata: &mut HashMap<u32, GameData>)
                         }
                     }
                 }
-                Err(e) => eprint!("{}", e),
+                Err(e) => eprint!("{e}"),
             }
         }
     }
-    return asset.game.id.to_string() + "/";
+    asset.game.id.to_string() + "/"
 }
 
 fn extract_path_item_prefix_from_gamedata(gamedata: &GameData) -> String {
@@ -114,21 +111,21 @@ fn extract_path_item_prefix_from_gamedata(gamedata: &GameData) -> String {
         "Could not find a Steam ID for {}, look for it in the {} folder",
         gamedata.game.name, gamedata.game.id
     );
-    return gamedata.game.id.to_string() + "/";
+    gamedata.game.id.to_string() + "/"
 }
 
 fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
     //Why is this not a singular if-statement?
     //Here's why: https://github.com/rust-lang/rust/issues/53667
     if !dry_run {
-        if let Some(directory) = path.rsplit_once("/") {
+        if let Some(directory) = path.rsplit_once('/') {
             if let Err(e) = fs::create_dir_all(directory.0) {
                 eprintln!("Error creating directory: {e}");
                 return Err(e);
             }
         }
     }
-    println!("Saving file {}", path);
+    println!("Saving file {path}");
     if dry_run {
         return Ok(());
     }
@@ -143,17 +140,15 @@ fn save_image(path: &str, url: &str, dry_run: bool) -> Result<(), Error> {
             let mut reader = r.into_reader();
             match fs::File::create(path) {
                 Ok(mut f) => {
-                    if let Err(e) = std::io::copy(&mut reader, &mut f) {
-                        return Err(e);
-                    }
-                    return Ok(());
+                    std::io::copy(&mut reader, &mut f)?;
+                    Ok(())
                 }
-                Err(e) => return Err(e),
+                Err(e) => Err(e),
             }
         }
         Err(e) => {
             eprintln!("{e}");
-            return Err(Error::new(std::io::ErrorKind::Other, e.to_string()));
+            Err(Error::new(std::io::ErrorKind::Other, e.to_string()))
         }
-    };
+    }
 }

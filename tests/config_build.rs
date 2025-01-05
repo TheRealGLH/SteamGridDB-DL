@@ -14,7 +14,7 @@ mod tests {
         let mut args: Vec<String> = Vec::new();
         args.push("--".to_string());
         let config = Configuration::build(args.into_iter());
-        assert!(!config.is_err(), "Configuration should exist.");
+        assert!(config.is_ok(), "Configuration should exist.");
     }
 
     #[test]
@@ -88,7 +88,7 @@ mod tests {
         let directory = "/home/user/pictures";
         args.push("--".to_string());
         args.push("123".to_string());
-        args.push("--directory=".to_string() + &directory);
+        args.push("--directory=".to_string() + directory);
 
         let config = Configuration::build(args.into_iter());
         match config {
