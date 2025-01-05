@@ -65,7 +65,6 @@ impl Configuration {
     }
 }
 pub fn run(config: Configuration) -> Result<(), i32> {
-    dbg!(&config);
     if config.print_help {
         print_help();
         return Ok(());
