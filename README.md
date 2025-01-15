@@ -1,5 +1,8 @@
 # SteamGridDB DL
 
+A CLI tool written in Rust 2021 for automatically downloading the contents of a collection on [SteamGridDB](https://www.steamgriddb.com/) into the Steam configuration folder with the appropriate filenames.
+The code is honestly far from perfect (and whether or not doing it as a Rust project versus just making it a Bash/ Powershell script being the best option is debatable), this project mainly served as a learning experience for me.
+
 ## Using this tool for dummies
 
 _To be written. Will link to its own document._
